@@ -12,13 +12,13 @@ ${DIR}/prepare.sh
 (cd dist-web && npm link)
 
 echo "Running e2e examples build for node version ${TRAVIS_NODE_VERSION}"
-for i in examples/*; do
-  [ -e "$i" ] || continue # prevent failure if there are no examples
-  echo "--> running tests for: $i"
-  if [[ "$i" =~ "karma" ]]; then
-    (cd "$i" && npm i && npm link @pact-foundation/pact-web && npm t)
+for i in $(find ./examples -name package.json | grep -v node_modules); do
+  EXAMPLE_PATH=$(dirname $i)
+  echo "--> running tests for: $EXAMPLE_PATH"
+  if [[ "$EXAMPLE_PATH" == *"karma" ]]; then
+    (cd "$EXAMPLE_PATH" && npm i && npm link @pact-foundation/pact-web && npm t)
   else
-    (cd "$i" && npm i && npm link @pact-foundation/pact && npm t)
+    (cd "$EXAMPLE_PATH" && npm i && npm link @pact-foundation/pact && npm t)
   fi
 done
 
