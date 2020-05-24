@@ -1,0 +1,54 @@
+// Copyright 2015 gRPC authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+syntax = "proto3";
+
+package animal;
+
+// The greeting service definition.
+service Matching {
+  // Sends a greeting
+  rpc AvailableAnimals (AnimalsRequest) returns (AnimalsResponse) {}
+}
+
+// The request message containing the user's name.
+message AnimalsRequest {}
+
+message Location {
+  string description = 1;
+  string country = 2;
+  int32 post_code = 3;
+}
+message Eligibility {
+  bool available = 1;
+  bool previously_married = 2;
+}
+
+message Animal {
+  string id = 10;
+  string first_name = 1;
+  string animal = 2;
+  string last_name = 3;
+  string age = 4;
+  string available_from = 5;
+  string gender = 6;
+  Location location = 7;
+  Eligibility eligibility = 8;
+  repeated string interests = 9;
+}
+
+// The response message containing the greetings
+message AnimalsResponse {
+    repeated Animal animals = 1;
+}
