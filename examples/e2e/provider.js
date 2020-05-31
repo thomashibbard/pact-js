@@ -16,15 +16,6 @@ server.use((req, res, next) => {
   next()
 })
 
-server.use((req, res, next) => {
-  const token = req.headers["authorization"] || ""
-
-  if (token !== "Bearer 1234") {
-    res.sendStatus(401).send()
-  } else {
-    next()
-  }
-})
 
 const animalRepository = new Repository()
 
@@ -38,51 +29,11 @@ const importData = () => {
   }, 0)
 }
 
-// List all animals with 'available' eligibility
-const availableAnimals = () => {
-  return animalRepository.fetchAll().filter(a => {
-    return a.eligibility.available
-  })
-}
-
-// Get all animals
-server.get("/animals", (req, res) => {
-  res.json(animalRepository.fetchAll())
-})
-
 // Get all available animals
 server.get("/animals/available", (req, res) => {
-  res.json(availableAnimals())
+  res.redirect(302, "http://foo.com")
 })
 
-// Find an animal by ID
-server.get("/animals/:id", (req, res) => {
-  const response = animalRepository.getById(req.params.id)
-  if (response) {
-    res.end(JSON.stringify(response))
-  } else {
-    res.writeHead(404)
-    res.end()
-  }
-})
-
-// Register a new Animal for the service
-server.post("/animals", (req, res) => {
-  const animal = req.body
-
-  // Really basic validation
-  if (!animal || !animal.first_name) {
-    res.writeHead(400)
-    res.end()
-
-    return
-  }
-
-  animal.id = animalRepository.fetchAll().length
-  animalRepository.insert(animal)
-
-  res.json(animal)
-})
 
 module.exports = {
   server,

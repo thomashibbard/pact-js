@@ -54,7 +54,7 @@ describe("Pact Verification", () => {
       },
 
       // Fetch pacts from broker
-      pactBrokerUrl: "https://test.pact.dius.com.au/",
+      // pactBrokerUrl: "https://test.pact.dius.com.au/",
 
       // Fetch from broker with given tags
       consumerVersionTag: ["prod"],
@@ -75,12 +75,12 @@ describe("Pact Verification", () => {
       // Specific Remote pacts (doesn't need to be a broker)
       // pactUrls: ['https://test.pact.dius.com.au/pacts/provider/Animal%20Profile%20Service/consumer/Matching%20Service/latest'],
       // Local pacts
-      // pactUrls: [
-      //   path.resolve(
-      //     process.cwd(),
-      //     "./pacts/matching_service-animal_profile_service.json"
-      //   ),
-      // ],
+      pactUrls: [
+        path.resolve(
+          process.cwd(),
+          "./pacts/matching_service-animal_profile_service.json"
+        ),
+      ],
 
       // If you're NOT using Pactflow, use the username/password option as per below
       pactBrokerUsername: "dXfltyFMgNOFZAxr8io9wJ37iUpY42M",
