@@ -6,7 +6,7 @@ import pact from "@pact-foundation/pact-node"
 import { qToPromise } from "../common/utils"
 import { VerifierOptions as PactNodeVerifierOptions } from "@pact-foundation/pact-node"
 import serviceFactory from "@pact-foundation/pact-node"
-import { omit, isEmpty } from "lodash"
+import { omit, isEmpty, pickBy, identity, reduce } from "lodash"
 import * as express from "express"
 import * as http from "http"
 import logger from "../common/logger"
@@ -127,6 +127,13 @@ export class Verifier {
     app.use(this.stateSetupPath, bodyParser.json())
     app.use(this.stateSetupPath, bodyParser.urlencoded({ extended: true }))
 
+    // Trace req/res logging
+    if (this.config.logLevel === "trace") {
+      logger.info("trace logging enabled")
+      app.use(this.createRequestTracer())
+      app.use(this.createResponseTracer())
+    }
+
     // Allow for request filtering
     if (this.config.requestFilter !== undefined) {
       app.use(this.config.requestFilter)
@@ -155,6 +162,65 @@ export class Verifier {
       return this.setupStates(message)
         .then(() => res.sendStatus(200))
         .catch(e => res.status(500).send(e))
+    }
+  }
+
+  private createRequestTracer(): express.RequestHandler {
+    return (req, _, next) => {
+      logger.trace(
+        "incoming request",
+        pickBy(
+          {
+            body: req.body,
+            headers: req.headers,
+            method: req.method,
+            path: req.path,
+          },
+          identity
+        )
+      )
+      next()
+    }
+  }
+
+  private createResponseTracer(): express.RequestHandler {
+    return (_, res, next) => {
+      const [oldWrite, oldEnd] = [res.write, res.end]
+      const chunks: Buffer[] = []
+
+      res.write = (chunk: any) => {
+        chunks.push(Buffer.from(chunk))
+        return oldWrite.apply(res, [chunk])
+      }
+
+      res.end = (chunk: any) => {
+        if (chunk) {
+          chunks.push(Buffer.from(chunk))
+        }
+        const body = Buffer.concat(chunks).toString("utf8")
+        logger.trace(
+          "outgoing response",
+          pickBy(
+            {
+              body,
+              headers: reduce(
+                res.getHeaders(),
+                (acc: any, val, index) => {
+                  acc[index] = val
+                  return acc
+                },
+                {}
+              ),
+              status: res.statusCode,
+            },
+            identity
+          )
+        )
+        oldEnd.apply(res, [chunk])
+      }
+      if (next) {
+        next()
+      }
     }
   }
 
