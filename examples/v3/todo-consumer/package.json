@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@pact-foundation/pact": "^10.0.0-beta.2",
+    "neon-cli": "^0.3.3",
     "ts-node": "^3.3.0"
   },
   "mocha": {
