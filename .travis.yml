@@ -37,7 +37,7 @@ before_install:
   - eval "${MATRIX_EVAL}"
   - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo sysctl -w net.ipv6.conf.all.disable_ipv6=0; fi
   - curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-  - export PATH="$PATH:$HOME/.cargo/bin"
+  - export PATH="$PATH:$HOME/.cargo/bin:./node_modules/.bin"
   - source "$HOME/.cargo/env"
   - rustc --version
   - cargo --version
